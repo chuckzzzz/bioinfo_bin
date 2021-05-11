@@ -31,7 +31,7 @@ if __name__=="__main__":
     build_index=args.index
     store_header=args.header
 
-    print("INFO: input file: {}\nINFO: output directory: {}\nINFO: build index {}".format(vcf_file,output_dir,str(build_index)))
+    print("INFO: input file: {}\nINFO: output directory: {}\nINFO: build index {}\nINFO: include header {}".format(vcf_file,output_dir,str(build_index),str(store_header)))
 	
     if is_gz_file(vcf_file)==False:
         print("INFO: vcf file not gzipped, gzipping")
