@@ -56,4 +56,3 @@ if __name__=="__main__":
 	    subprocess.check_call(["bgzip",cur_output])
 	    if build_index:
 	        subprocess.check_call(["tabix","-p","vcf",cur_output+".gz"])
-	    
