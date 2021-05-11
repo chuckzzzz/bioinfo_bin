@@ -3,7 +3,7 @@
 # Input: a vcf file, gzipped or non-zipped  
 #        an output directory to store the files 
 # Output: Output separate files for each of the chromosomes into specified directory 
-# Example: python split.py -f /storage/czhang/projects/STR_expression/data/hg38.SNP.gz -o /storage/czhang/projects/STR_expression/data/hg38_SNP_genotypes/ -index
+# Example: python split.py -f /storage/czhang/projects/STR_expression/data/hg38.SNP.gz -o /storage/czhang/projects/STR_expression/data/hg38_SNP_genotypes/ -index -h
 
 import argparse
 import subprocess
@@ -14,6 +14,7 @@ parser = argparse.ArgumentParser(description='Split vcf by chromosome and build 
 parser.add_argument('-f', type=str, dest="f", help='input vcf file')
 parser.add_argument('-o', type=str, default="./", dest="o", help='output directory')
 parser.add_argument("-index", action="store_true",help='whether to build index')
+parser.add_argument('-h', dest='header', default=False, action='store_true')
 
 args = parser.parse_args()
 
@@ -25,11 +26,11 @@ def is_gz_file(filepath):
         return a == magic
 
 if __name__=="__main__":
-    print(args)
     vcf_file=args.f
     output_dir=args.o
     build_index=args.index
-	
+    store_header=args.header
+
     print("INFO: input file: {}\nINFO: output directory: {}\nINFO: build index {}".format(vcf_file,output_dir,str(build_index)))
 	
     if is_gz_file(vcf_file)==False:
@@ -46,7 +47,10 @@ if __name__=="__main__":
 	    cur_output=output_dir+cur_chrom
 	    try:    	
 	    	with open(cur_output,'wb') as f:
-	    		subprocess.check_call(["tabix",vcf_file,cur_chrom], stdout=f)
+			if(store_header):
+				subprocess.check_call(["tabix","-h",vcf_file,cur_chrom], stdout=f)
+			else:
+	    			subprocess.check_call(["tabix",vcf_file,cur_chrom], stdout=f)
 	    except subprocess.CalledProcessError as e:
 	    	raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
 	    subprocess.check_call(["bgzip",cur_output])
